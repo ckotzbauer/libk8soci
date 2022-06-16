@@ -1,0 +1,11 @@
+name: size-label
+on:
+  pull_request_target:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  size-label:
+    uses: ckotzbauer/actions-toolkit/.github/workflows/toolkit-size-label.yml@0.15.0
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+

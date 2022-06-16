@@ -1,0 +1,67 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.18.3'
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup AWS CLI
+        uses: unfor19/install-aws-cli-action@v1
+
+      - uses: azure/setup-kubectl@v2.1
+        with:
+          version: 'v1.24.0'
+
+      - name: Setup Cosign
+        uses: sigstore/cosign-installer@7e0881f8fe90b25e305bbf0309761e9314607e25
+
+      - name: Setup Syft
+        uses: ckotzbauer/actions-toolkit/setup-syft@0.15.0
+
+      - name: Install GoReleaser
+        uses: goreleaser/goreleaser-action@v3
+        with:
+          version: "v1.7.0"
+          install-only: true
+
+      - name: Build
+        shell: bash
+        run: make build
+
+      - name: Prepare secrets
+        shell: bash
+        env:
+          TEST_GCR_PASSWORD: ${{ secrets.TEST_GCR_PASSWORD }}
+          TEST_GAR_PASSWORD: ${{ secrets.TEST_GAR_PASSWORD }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.TEST_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.TEST_AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: eu-central-1
+        run: |
+          source hack/prepare-auth-files.sh
+          mkdir auth
+
+          create_auth_file "AWS" "$(aws ecr get-login-password)" "055403865123.dkr.ecr.eu-central-1.amazonaws.com" "${{ secrets.TEST_EMAIL }}" > auth/ecr.yaml
+          create_auth_file "_json_key" "$TEST_GAR_PASSWORD" "europe-west3-docker.pkg.dev" "${{ secrets.TEST_EMAIL }}" > auth/gar.yaml
+          create_auth_file "_json_key" "$TEST_GCR_PASSWORD" "gcr.io" "${{ secrets.TEST_EMAIL }}" > auth/gcr.yaml
+          create_auth_file "${{ secrets.TEST_GHCR_USERNAME }}" "${{ secrets.TEST_GHCR_PASSWORD }}" "ghcr.io" "${{ secrets.TEST_EMAIL }}" > auth/ghcr.yaml
+          create_auth_file "${{ secrets.TEST_HUB_USERNAME }}" "${{ secrets.TEST_HUB_PASSWORD }}" "https://index.docker.io/v1/" "${{ secrets.TEST_EMAIL }}" > auth/hub.yaml
+          create_legacy_auth_file "${{ secrets.TEST_GHCR_USERNAME }}" "${{ secrets.TEST_GHCR_PASSWORD }}" "ghcr.io" > auth/legacy-ghcr.yaml
+
+      - name: Unit tests
+        run: make test
+
+      - uses: codecov/codecov-action@v3
+        with:
+          files: cover.out

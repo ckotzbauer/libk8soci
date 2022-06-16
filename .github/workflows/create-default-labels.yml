@@ -1,0 +1,15 @@
+name: create-default-labels
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+      - ".github/labels.json"
+  workflow_dispatch: {}
+
+jobs:
+  size-label:
+    uses: ckotzbauer/actions-toolkit/.github/workflows/toolkit-create-default-labels.yml@0.15.0
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+
