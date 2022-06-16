@@ -36,10 +36,6 @@ jobs:
           version: "v1.7.0"
           install-only: true
 
-      - name: Build
-        shell: bash
-        run: make build
-
       - name: Prepare secrets
         shell: bash
         env:
