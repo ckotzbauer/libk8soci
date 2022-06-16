@@ -66,9 +66,8 @@ func (client *KubeClient) listPods(namespace, labelSelector string) ([]corev1.Po
 	return list.Items, nil
 }
 
-func (client *KubeClient) LoadImageInfos(namespaces []corev1.Namespace, podLabelSelector string) (map[string]KubeImage, []KubeImage) {
+func (client *KubeClient) LoadImageInfos(namespaces []corev1.Namespace, podLabelSelector string) map[string]KubeImage {
 	images := map[string]KubeImage{}
-	allImages := []KubeImage{}
 
 	for _, ns := range namespaces {
 		pods, err := client.listPods(ns.Name, podLabelSelector)
@@ -85,7 +84,7 @@ func (client *KubeClient) LoadImageInfos(namespaces []corev1.Namespace, podLabel
 			statuses = append(statuses, pod.Status.InitContainerStatuses...)
 			statuses = append(statuses, pod.Status.EphemeralContainerStatuses...)
 
-			allImageCreds = client.loadSecrets(pod.Namespace, pod.Spec.ImagePullSecrets)
+			allImageCreds = client.LoadSecrets(pod.Namespace, pod.Spec.ImagePullSecrets)
 
 			for _, c := range statuses {
 				if c.ImageID != "" {
@@ -101,16 +100,15 @@ func (client *KubeClient) LoadImageInfos(namespaces []corev1.Namespace, podLabel
 
 					img.Pods = append(img.Pods, pod)
 					images[trimmedImageID] = img
-					allImages = append(allImages, img)
 				}
 			}
 		}
 	}
 
-	return images, allImages
+	return images
 }
 
-func (client *KubeClient) loadSecrets(namespace string, secrets []corev1.LocalObjectReference) []oci.KubeCreds {
+func (client *KubeClient) LoadSecrets(namespace string, secrets []corev1.LocalObjectReference) []oci.KubeCreds {
 	allImageCreds := []oci.KubeCreds{}
 
 	for _, s := range secrets {
