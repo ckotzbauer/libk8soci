@@ -17,7 +17,7 @@ create_auth_file() {
 create_legacy_auth_file() {
     cat << EOF > .dockercfg
     {
-        "${3}": { "username": "${1}", "${2}" }
+        "${3}": { "username": "${1}", "password": "${2}" }
     }
 EOF
 
