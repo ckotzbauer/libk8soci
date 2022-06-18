@@ -11,6 +11,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
@@ -18,11 +19,20 @@ type KubeClient struct {
 	Client *kubernetes.Clientset
 }
 
-func NewClient() *KubeClient {
+func DefaultConfig() (*rest.Config, error) {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 
 	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, &clientcmd.ConfigOverrides{})
 	config, err := kubeConfig.ClientConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	return config, nil
+}
+
+func NewClient() *KubeClient {
+	config, err := DefaultConfig()
 	if err != nil {
 		logrus.WithError(err).Fatal("kubeconfig file could not be found!")
 	}
