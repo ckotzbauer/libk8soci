@@ -36,12 +36,6 @@ func TestRegistry(t *testing.T) {
 			legacy:    false,
 			imageSize: 2823168,
 		},
-		/*{
-			registry: "acr",
-			image:  "sbomgitoperator.azurecr.io/integration-test-image:1.0.0",
-			legacy: false,
-			imageSize: 2823168,
-		},*/
 		{
 			registry:  "hub",
 			image:     "docker.io/ckotzbauer/integration-test-image:1.0.0",

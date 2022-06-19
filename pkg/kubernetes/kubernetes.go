@@ -8,6 +8,7 @@ import (
 	"github.com/ckotzbauer/libk8soci/pkg/oci"
 	"github.com/ckotzbauer/libk8soci/pkg/util"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/exp/maps"
 	corev1 "k8s.io/api/core/v1"
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -76,7 +77,7 @@ func (client *KubeClient) listPods(namespace, labelSelector string) ([]corev1.Po
 	return list.Items, nil
 }
 
-func (client *KubeClient) LoadImageInfos(namespaces []corev1.Namespace, podLabelSelector string) map[string]KubeImage {
+func (client *KubeClient) LoadImageInfos(namespaces []corev1.Namespace, podLabelSelector string) []KubeImage {
 	images := map[string]KubeImage{}
 
 	for _, ns := range namespaces {
@@ -87,14 +88,12 @@ func (client *KubeClient) LoadImageInfos(namespaces []corev1.Namespace, podLabel
 		}
 
 		for _, pod := range pods {
-			allImageCreds := []oci.KubeCreds{}
-
 			statuses := []corev1.ContainerStatus{}
 			statuses = append(statuses, pod.Status.ContainerStatuses...)
 			statuses = append(statuses, pod.Status.InitContainerStatuses...)
 			statuses = append(statuses, pod.Status.EphemeralContainerStatuses...)
 
-			allImageCreds = client.LoadSecrets(pod.Namespace, pod.Spec.ImagePullSecrets)
+			allImageCreds := client.LoadSecrets(pod.Namespace, pod.Spec.ImagePullSecrets)
 
 			for _, c := range statuses {
 				if c.ImageID != "" {
@@ -115,7 +114,7 @@ func (client *KubeClient) LoadImageInfos(namespaces []corev1.Namespace, podLabel
 		}
 	}
 
-	return images
+	return maps.Values(images)
 }
 
 func (client *KubeClient) LoadSecrets(namespace string, secrets []corev1.LocalObjectReference) []oci.KubeCreds {
