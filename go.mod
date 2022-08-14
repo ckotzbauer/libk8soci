@@ -5,7 +5,6 @@ go 1.18
 require (
 	github.com/docker/cli v20.10.17+incompatible
 	github.com/stretchr/testify v1.8.0
-	golang.org/x/exp v0.0.0-20220722155223-a9213eeb770e
 	k8s.io/api v0.24.3
 	k8s.io/apimachinery v0.24.3
 	k8s.io/client-go v0.24.3
@@ -25,6 +24,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/gnostic v0.5.7-v3refs // indirect
+	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/google/gofuzz v1.1.0 // indirect
 	github.com/imdario/mergo v0.3.8 // indirect
 	github.com/josharian/intern v1.0.0 // indirect

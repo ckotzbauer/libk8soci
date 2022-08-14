@@ -8,11 +8,13 @@ import (
 	"github.com/ckotzbauer/libk8soci/pkg/oci"
 	"github.com/ckotzbauer/libk8soci/pkg/util"
 	"github.com/sirupsen/logrus"
-	"golang.org/x/exp/maps"
 	corev1 "k8s.io/api/core/v1"
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
@@ -46,9 +48,7 @@ func NewClient() *KubeClient {
 	return &KubeClient{Client: client}
 }
 
-func prepareLabelSelector(selector string) meta.ListOptions {
-	listOptions := meta.ListOptions{}
-
+func prepareLabelSelector(listOptions meta.ListOptions, selector string) meta.ListOptions {
 	if len(selector) > 0 {
 		listOptions.LabelSelector = util.Unescape(selector)
 		logrus.Tracef("Applied labelSelector %v", listOptions.LabelSelector)
@@ -58,7 +58,7 @@ func prepareLabelSelector(selector string) meta.ListOptions {
 }
 
 func (client *KubeClient) ListNamespaces(labelSelector string) ([]corev1.Namespace, error) {
-	list, err := client.Client.CoreV1().Namespaces().List(context.Background(), prepareLabelSelector(labelSelector))
+	list, err := client.Client.CoreV1().Namespaces().List(context.Background(), prepareLabelSelector(meta.ListOptions{}, labelSelector))
 
 	if err != nil {
 		return []corev1.Namespace{}, fmt.Errorf("failed to list namespaces: %w", err)
@@ -68,7 +68,7 @@ func (client *KubeClient) ListNamespaces(labelSelector string) ([]corev1.Namespa
 }
 
 func (client *KubeClient) listPods(namespace, labelSelector string) ([]corev1.Pod, error) {
-	list, err := client.Client.CoreV1().Pods(namespace).List(context.Background(), prepareLabelSelector(labelSelector))
+	list, err := client.Client.CoreV1().Pods(namespace).List(context.Background(), prepareLabelSelector(meta.ListOptions{}, labelSelector))
 
 	if err != nil {
 		return []corev1.Pod{}, fmt.Errorf("failed to list pods: %w", err)
@@ -77,8 +77,8 @@ func (client *KubeClient) listPods(namespace, labelSelector string) ([]corev1.Po
 	return list.Items, nil
 }
 
-func (client *KubeClient) LoadImageInfos(namespaces []corev1.Namespace, podLabelSelector string) []KubeImage {
-	images := map[string]KubeImage{}
+func (client *KubeClient) LoadPodInfos(namespaces []corev1.Namespace, podLabelSelector string) []PodInfo {
+	podInfos := []PodInfo{}
 
 	for _, ns := range namespaces {
 		pods, err := client.listPods(ns.Name, podLabelSelector)
@@ -88,33 +88,43 @@ func (client *KubeClient) LoadImageInfos(namespaces []corev1.Namespace, podLabel
 		}
 
 		for _, pod := range pods {
-			statuses := []corev1.ContainerStatus{}
-			statuses = append(statuses, pod.Status.ContainerStatuses...)
-			statuses = append(statuses, pod.Status.InitContainerStatuses...)
-			statuses = append(statuses, pod.Status.EphemeralContainerStatuses...)
-
-			allImageCreds := client.LoadSecrets(pod.Namespace, pod.Spec.ImagePullSecrets)
-
-			for _, c := range statuses {
-				if c.ImageID != "" {
-					imageIDSlice := strings.Split(c.ImageID, "://")
-					trimmedImageID := imageIDSlice[len(imageIDSlice)-1]
-					img, ok := images[trimmedImageID]
-					if !ok {
-						img = KubeImage{
-							Image: oci.RegistryImage{Image: c.Image, ImageID: trimmedImageID, PullSecrets: allImageCreds},
-							Pods:  []corev1.Pod{},
-						}
-					}
-
-					img.Pods = append(img.Pods, pod)
-					images[trimmedImageID] = img
-				}
-			}
+			podInfos = append(podInfos, PodInfo{
+				Containers:   client.ExtractContainerInfos(pod),
+				PodName:      pod.Name,
+				PodNamespace: pod.Namespace,
+				Annotations:  pod.Annotations,
+			})
 		}
 	}
 
-	return maps.Values(images)
+	return podInfos
+}
+
+func (client *KubeClient) ExtractContainerInfos(pod corev1.Pod) []ContainerInfo {
+	statuses := []corev1.ContainerStatus{}
+	statuses = append(statuses, pod.Status.ContainerStatuses...)
+	statuses = append(statuses, pod.Status.InitContainerStatuses...)
+	statuses = append(statuses, pod.Status.EphemeralContainerStatuses...)
+
+	allImageCreds := client.LoadSecrets(pod.Namespace, pod.Spec.ImagePullSecrets)
+	containers := make([]ContainerInfo, 0)
+
+	for _, c := range statuses {
+		if c.ImageID != "" {
+			imageIDSlice := strings.Split(c.ImageID, "://")
+			trimmedImageID := imageIDSlice[len(imageIDSlice)-1]
+			containers = append(containers, ContainerInfo{
+				Image: oci.RegistryImage{
+					Image:       c.Image,
+					ImageID:     trimmedImageID,
+					PullSecrets: allImageCreds,
+				},
+				Name: c.Name,
+			})
+		}
+	}
+
+	return containers
 }
 
 func (client *KubeClient) LoadSecrets(namespace string, secrets []corev1.LocalObjectReference) []oci.KubeCreds {
@@ -146,4 +156,20 @@ func (client *KubeClient) LoadSecrets(namespace string, secrets []corev1.LocalOb
 	}
 
 	return allImageCreds
+}
+
+func (client *KubeClient) CreatePodInformer(labelSelector string) cache.SharedIndexInformer {
+	ctx := context.Background()
+	return cache.NewSharedIndexInformer(
+		&cache.ListWatch{
+			ListFunc: func(options meta.ListOptions) (runtime.Object, error) {
+				return client.Client.CoreV1().Pods(meta.NamespaceAll).List(ctx, prepareLabelSelector(options, labelSelector))
+			},
+			WatchFunc: func(options meta.ListOptions) (watch.Interface, error) {
+				return client.Client.CoreV1().Pods(meta.NamespaceAll).Watch(ctx, prepareLabelSelector(options, labelSelector))
+			},
+		},
+		&corev1.Pod{},
+		0,
+		cache.Indexers{})
 }
