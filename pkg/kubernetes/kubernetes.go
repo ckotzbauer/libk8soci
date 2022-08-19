@@ -88,25 +88,18 @@ func (client *KubeClient) LoadPodInfos(namespaces []corev1.Namespace, podLabelSe
 		}
 
 		for _, pod := range pods {
-			podInfos = append(podInfos, PodInfo{
-				Containers:   client.ExtractContainerInfos(pod),
-				PodName:      pod.Name,
-				PodNamespace: pod.Namespace,
-				Annotations:  pod.Annotations,
-			})
+			podInfos = append(podInfos, client.ExtractPodInfos(pod))
 		}
 	}
 
 	return podInfos
 }
 
-func (client *KubeClient) ExtractContainerInfos(pod corev1.Pod) []ContainerInfo {
+func (client *KubeClient) ExtractPodInfos(pod corev1.Pod) PodInfo {
 	statuses := []corev1.ContainerStatus{}
 	statuses = append(statuses, pod.Status.ContainerStatuses...)
 	statuses = append(statuses, pod.Status.InitContainerStatuses...)
 	statuses = append(statuses, pod.Status.EphemeralContainerStatuses...)
-
-	allImageCreds := client.LoadSecrets(pod.Namespace, pod.Spec.ImagePullSecrets)
 	containers := make([]ContainerInfo, 0)
 
 	for _, c := range statuses {
@@ -115,16 +108,21 @@ func (client *KubeClient) ExtractContainerInfos(pod corev1.Pod) []ContainerInfo 
 			trimmedImageID := imageIDSlice[len(imageIDSlice)-1]
 			containers = append(containers, ContainerInfo{
 				Image: oci.RegistryImage{
-					Image:       c.Image,
-					ImageID:     trimmedImageID,
-					PullSecrets: allImageCreds,
+					Image:   c.Image,
+					ImageID: trimmedImageID,
 				},
 				Name: c.Name,
 			})
 		}
 	}
 
-	return containers
+	return PodInfo{
+		Containers:      containers,
+		PodName:         pod.Name,
+		PodNamespace:    pod.Namespace,
+		Annotations:     pod.Annotations,
+		PullSecretNames: pod.Spec.ImagePullSecrets,
+	}
 }
 
 func (client *KubeClient) LoadSecrets(namespace string, secrets []corev1.LocalObjectReference) []oci.KubeCreds {
