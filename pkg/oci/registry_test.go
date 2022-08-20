@@ -99,7 +99,7 @@ func testRegistry(t *testing.T, name, image string, legacy bool, imageSize int64
 	file := "/tmp/1.0.0.tar.gz"
 	err = oci.SaveImage(file, oci.RegistryImage{
 		ImageID:     image,
-		PullSecrets: []oci.KubeCreds{{SecretName: name, SecretCredsData: []byte(decoded), IsLegacySecret: legacy}},
+		PullSecrets: []*oci.KubeCreds{{SecretName: name, SecretCredsData: []byte(decoded), IsLegacySecret: legacy}},
 	})
 
 	if err == nil {
@@ -114,7 +114,7 @@ func testRegistry(t *testing.T, name, image string, legacy bool, imageSize int64
 // this test should check if an image is pullable without pullSecrets (e.g. dockerhub - where it is really possible)
 func testRegistryWithoutPullSecretsPositive(t *testing.T, image string, imageSize int64) {
 	file := "/tmp/1.0.0.tar.gz"
-	err := oci.SaveImage(file, oci.RegistryImage{ImageID: image, PullSecrets: []oci.KubeCreds{}})
+	err := oci.SaveImage(file, oci.RegistryImage{ImageID: image, PullSecrets: []*oci.KubeCreds{}})
 
 	if err == nil {
 		stat, _ := os.Stat(file)
@@ -129,7 +129,7 @@ func testRegistryWithoutPullSecretsPositive(t *testing.T, image string, imageSiz
 // an error must be returned
 func testRegistryWithoutPullSecretsNegative(t *testing.T, image string) {
 	file := "/tmp/1.0.0.tar.gz"
-	err := oci.SaveImage(file, oci.RegistryImage{ImageID: image, PullSecrets: []oci.KubeCreds{}})
+	err := oci.SaveImage(file, oci.RegistryImage{ImageID: image, PullSecrets: []*oci.KubeCreds{}})
 	assert.Error(t, err)
 	os.Remove(file)
 }
@@ -140,7 +140,7 @@ func testRegistryWithWrongPullSecretNegative(t *testing.T, image string) {
 	file := "/tmp/1.0.0.tar.gz"
 	err := oci.SaveImage(file, oci.RegistryImage{
 		ImageID:     image,
-		PullSecrets: []oci.KubeCreds{{SecretName: "test", SecretCredsData: []byte{}, IsLegacySecret: false}},
+		PullSecrets: []*oci.KubeCreds{{SecretName: "test", SecretCredsData: []byte{}, IsLegacySecret: false}},
 	})
 
 	if assert.Error(t, err) {

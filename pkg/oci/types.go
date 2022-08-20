@@ -9,5 +9,5 @@ type KubeCreds struct {
 type RegistryImage struct {
 	ImageID     string
 	Image       string
-	PullSecrets []KubeCreds
+	PullSecrets []*KubeCreds
 }

@@ -100,14 +100,14 @@ func (client *KubeClient) ExtractPodInfos(pod corev1.Pod) PodInfo {
 	statuses = append(statuses, pod.Status.ContainerStatuses...)
 	statuses = append(statuses, pod.Status.InitContainerStatuses...)
 	statuses = append(statuses, pod.Status.EphemeralContainerStatuses...)
-	containers := make([]ContainerInfo, 0)
+	containers := make([]*ContainerInfo, 0)
 
 	for _, c := range statuses {
 		if c.ImageID != "" {
 			imageIDSlice := strings.Split(c.ImageID, "://")
 			trimmedImageID := imageIDSlice[len(imageIDSlice)-1]
-			containers = append(containers, ContainerInfo{
-				Image: oci.RegistryImage{
+			containers = append(containers, &ContainerInfo{
+				Image: &oci.RegistryImage{
 					Image:   c.Image,
 					ImageID: trimmedImageID,
 				},
@@ -125,8 +125,8 @@ func (client *KubeClient) ExtractPodInfos(pod corev1.Pod) PodInfo {
 	}
 }
 
-func (client *KubeClient) LoadSecrets(namespace string, secrets []corev1.LocalObjectReference) []oci.KubeCreds {
-	allImageCreds := []oci.KubeCreds{}
+func (client *KubeClient) LoadSecrets(namespace string, secrets []corev1.LocalObjectReference) []*oci.KubeCreds {
+	allImageCreds := []*oci.KubeCreds{}
 
 	for _, s := range secrets {
 		secret, err := client.Client.CoreV1().Secrets(namespace).Get(context.Background(), s.Name, meta.GetOptions{})
@@ -149,7 +149,7 @@ func (client *KubeClient) LoadSecrets(namespace string, secrets []corev1.LocalOb
 		}
 
 		if len(creds) > 0 {
-			allImageCreds = append(allImageCreds, oci.KubeCreds{SecretName: name, SecretCredsData: creds, IsLegacySecret: legacy})
+			allImageCreds = append(allImageCreds, &oci.KubeCreds{SecretName: name, SecretCredsData: creds, IsLegacySecret: legacy})
 		}
 	}
 

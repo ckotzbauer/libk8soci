@@ -36,7 +36,7 @@ func SaveImage(imagePath string, image RegistryImage) error {
 		return err
 	} else {
 		for _, pullSecret := range image.PullSecrets {
-			cfg, err = resolveAuthConfigWithPullSecret(image, pullSecret)
+			cfg, err = resolveAuthConfigWithPullSecret(image, *pullSecret)
 			if err != nil {
 				logrus.WithError(err).Warnf("image: %s, Read authentication configuration from secret: %s failed", image.ImageID, pullSecret.SecretName)
 				continue
@@ -145,7 +145,7 @@ func resolveAuthConfigWithPullSecret(image RegistryImage, pullSecret KubeCreds) 
 func ResolveAuthConfig(image RegistryImage) (types.AuthConfig, error) {
 	// to not break JobImages this function needs to redirect to the actual resolve-function, using the first pullSecret from the list if exists
 	if len(image.PullSecrets) > 0 {
-		return resolveAuthConfigWithPullSecret(image, image.PullSecrets[0])
+		return resolveAuthConfigWithPullSecret(image, *image.PullSecrets[0])
 	} else {
 		return types.AuthConfig{}, nil
 	}

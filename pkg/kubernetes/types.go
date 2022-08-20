@@ -6,12 +6,12 @@ import (
 )
 
 type ContainerInfo struct {
-	Image oci.RegistryImage
+	Image *oci.RegistryImage
 	Name  string
 }
 
 type PodInfo struct {
-	Containers      []ContainerInfo
+	Containers      []*ContainerInfo
 	PodName         string
 	PodNamespace    string
 	Annotations     map[string]string
