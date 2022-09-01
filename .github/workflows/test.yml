@@ -28,7 +28,7 @@ jobs:
         uses: sigstore/cosign-installer@09a077b27eb1310dcfb21981bee195b30ce09de0
 
       - name: Setup Syft
-        uses: ckotzbauer/actions-toolkit/setup-syft@0.18.0
+        uses: ckotzbauer/actions-toolkit/setup-syft@0.19.0
 
       - name: Install GoReleaser
         uses: goreleaser/goreleaser-action@v3
