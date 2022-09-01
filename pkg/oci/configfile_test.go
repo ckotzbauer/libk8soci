@@ -1,7 +1,6 @@
 package oci
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -38,16 +37,16 @@ func TestLegacyJSONSaveWithNoFile(t *testing.T) {
 	err = configFile.Save()
 	assert.ErrorContains(t, err, "with empty filename")
 
-	tmpHome, err := ioutil.TempDir("", "config-test")
+	tmpHome, err := os.CreateTemp("", "config-test")
 	assert.Nil(t, err)
-	defer os.RemoveAll(tmpHome)
+	defer os.RemoveAll(tmpHome.Name())
 
-	fn := filepath.Join(tmpHome, config.ConfigFileName)
+	fn := filepath.Join(tmpHome.Name(), config.ConfigFileName)
 	f, _ := os.OpenFile(fn, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	defer f.Close()
 
 	assert.Nil(t, configFile.SaveToWriter(f))
-	buf, err := ioutil.ReadFile(filepath.Join(tmpHome, config.ConfigFileName))
+	buf, err := os.ReadFile(filepath.Join(tmpHome.Name(), config.ConfigFileName))
 	assert.Nil(t, err)
 
 	expConfStr := `{

@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"strings"
 
 	"github.com/docker/cli/cli/config/configfile"
@@ -26,7 +25,7 @@ const (
 // LegacyLoadFromReader reads the non-nested configuration data given and sets up the
 // auth config information with given directory and populates the receiver object
 func LegacyLoadFromReader(configData io.Reader, configFile *configfile.ConfigFile) error {
-	b, err := ioutil.ReadAll(configData)
+	b, err := io.ReadAll(configData)
 	if err != nil {
 		return err
 	}
