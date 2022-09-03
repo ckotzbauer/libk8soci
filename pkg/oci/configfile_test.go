@@ -37,16 +37,16 @@ func TestLegacyJSONSaveWithNoFile(t *testing.T) {
 	err = configFile.Save()
 	assert.ErrorContains(t, err, "with empty filename")
 
-	tmpHome, err := os.CreateTemp("", "config-test")
+	tmpHome, err := os.MkdirTemp("", "config-test")
 	assert.Nil(t, err)
-	defer os.RemoveAll(tmpHome.Name())
+	defer os.RemoveAll(tmpHome)
 
-	fn := filepath.Join(tmpHome.Name(), config.ConfigFileName)
+	fn := filepath.Join(tmpHome, config.ConfigFileName)
 	f, _ := os.OpenFile(fn, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
 	defer f.Close()
 
 	assert.Nil(t, configFile.SaveToWriter(f))
-	buf, err := os.ReadFile(filepath.Join(tmpHome.Name(), config.ConfigFileName))
+	buf, err := os.ReadFile(filepath.Join(tmpHome, config.ConfigFileName))
 	assert.Nil(t, err)
 
 	expConfStr := `{
