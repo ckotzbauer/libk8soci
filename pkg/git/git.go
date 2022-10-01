@@ -50,7 +50,7 @@ func (g *GitAccount) alreadyCloned(path string) (*git.Repository, error) {
 	return r, nil
 }
 
-func (g *GitAccount) PrepareRepository(repo, path, branch string) {
+func (g *GitAccount) PrepareRepository(repo, path, branch string) error {
 	r, err := g.alreadyCloned(path)
 	cloned := false
 	var auth *http.BasicAuth
@@ -60,7 +60,7 @@ func (g *GitAccount) PrepareRepository(repo, path, branch string) {
 		auth, err = g.resolveAuth()
 		if err != nil {
 			logrus.WithError(err).Error("Auth failed")
-			return
+			return err
 		}
 
 		if g.FallbackClone {
@@ -79,14 +79,14 @@ func (g *GitAccount) PrepareRepository(repo, path, branch string) {
 
 	if err != nil {
 		logrus.WithError(err).Error("Open or clone failed")
-		return
+		return err
 	}
 
 	w, err := r.Worktree()
 
 	if err != nil {
 		logrus.WithError(err).Error("Worktree failed")
-		return
+		return err
 	}
 
 	err = w.Checkout(&git.CheckoutOptions{
@@ -96,24 +96,25 @@ func (g *GitAccount) PrepareRepository(repo, path, branch string) {
 
 	if err != nil {
 		logrus.WithError(err).Error("Checkout failed")
-		return
+		return err
 	}
 
 	if !cloned {
 		auth, err := g.resolveAuth()
 		if err != nil {
 			logrus.WithError(err).Error("Auth failed")
-			return
+			return err
 		}
 
 		err = w.Pull(&git.PullOptions{ReferenceName: plumbing.NewBranchReferenceName(branch), Auth: auth})
 		if err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
 			logrus.WithError(err).Error("Pull failed")
-			return
+			return err
 		}
 	}
 
 	logrus.Debug("Git-Repository is prepared!")
+	return nil
 }
 
 func (g *GitAccount) openExistingRepo(path string) (*git.Repository, *git.Worktree) {
@@ -160,9 +161,9 @@ func (g *GitAccount) fallbackClone(path, repo, branch string, auth *http.BasicAu
 		exErr, ok := err.(*exec.ExitError)
 		if ok {
 			errOutput := strings.Split(string(exErr.Stderr), "\n")[0]
-			return fmt.Errorf("'%s' failed: %v", strings.Join(cmd.Args, " "), errOutput)
+			return fmt.Errorf("'%s' failed (%v): %v", strings.Join(cmd.Args, " "), cmd.ProcessState.ExitCode(), errOutput)
 		} else {
-			return fmt.Errorf("'%s' failed: %w", strings.Join(cmd.Args, " "), err)
+			return fmt.Errorf("'%s' failed with exit-code %v: %w", strings.Join(cmd.Args, " "), exErr.ExitCode(), err)
 		}
 	}
 
