@@ -121,6 +121,7 @@ func (client *KubeClient) ExtractPodInfos(pod corev1.Pod) PodInfo {
 		PodName:         pod.Name,
 		PodNamespace:    pod.Namespace,
 		Annotations:     pod.Annotations,
+		Labels:          pod.Labels,
 		PullSecretNames: pod.Spec.ImagePullSecrets,
 	}
 }

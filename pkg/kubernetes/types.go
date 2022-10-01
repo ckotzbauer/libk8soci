@@ -15,5 +15,6 @@ type PodInfo struct {
 	PodName         string
 	PodNamespace    string
 	Annotations     map[string]string
+	Labels          map[string]string
 	PullSecretNames []corev1.LocalObjectReference
 }
