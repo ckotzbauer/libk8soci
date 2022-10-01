@@ -3,7 +3,7 @@ module github.com/ckotzbauer/libk8soci
 go 1.19
 
 require (
-	github.com/docker/cli v20.10.17+incompatible
+	github.com/docker/cli v20.10.18+incompatible
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/stretchr/testify v1.8.0
