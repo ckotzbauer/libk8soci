@@ -25,7 +25,7 @@ jobs:
           version: 'v1.24.0'
 
       - name: Setup Cosign
-        uses: sigstore/cosign-installer@ced07f21fb1da67979f539bbc6304c16c0677e76
+        uses: sigstore/cosign-installer@7bca8b41164994a7dc93749d266e2f1db492f8a2
 
       - name: Setup Syft
         uses: ckotzbauer/actions-toolkit/setup-syft@0.24.0
