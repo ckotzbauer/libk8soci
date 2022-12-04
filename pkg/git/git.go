@@ -12,6 +12,8 @@ import (
 	git "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/go-git/go-git/v5/plumbing/protocol/packp/capability"
+	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/sirupsen/logrus"
 )
@@ -54,6 +56,10 @@ func (g *GitAccount) PrepareRepository(repo, path, branch string) error {
 	r, err := g.alreadyCloned(path)
 	cloned := false
 	var auth *http.BasicAuth
+
+	transport.UnsupportedCapabilities = []capability.Capability{
+		capability.ThinPack,
+	}
 
 	if r == nil && err == nil {
 		cloned = true
