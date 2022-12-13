@@ -31,7 +31,7 @@ jobs:
         uses: ckotzbauer/actions-toolkit/setup-syft@0.27.0
 
       - name: Install GoReleaser
-        uses: goreleaser/goreleaser-action@v3
+        uses: goreleaser/goreleaser-action@v4
         with:
           version: "v1.7.0"
           install-only: true
