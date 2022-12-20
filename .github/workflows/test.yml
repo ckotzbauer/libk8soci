@@ -30,6 +30,7 @@ jobs:
       build-commands: |
         source hack/prepare-auth-files.sh
         mkdir auth
+        printenv
         create_auth_file "AWS" "$(aws ecr get-login-password)" "055403865123.dkr.ecr.eu-central-1.amazonaws.com" "$TEST_EMAIL" > auth/ecr.yaml
         create_auth_file "_json_key" "$TEST_GAR_PASSWORD" "europe-west3-docker.pkg.dev" "$TEST_EMAIL" > auth/gar.yaml
         create_auth_file "_json_key" "$TEST_GCR_PASSWORD" "gcr.io" "$TEST_EMAIL" > auth/gcr.yaml
