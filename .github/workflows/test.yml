@@ -66,8 +66,8 @@ jobs:
         source hack/prepare-auth-files.sh
         mkdir auth
         create_auth_file "AWS" "$(aws ecr get-login-password)" "055403865123.dkr.ecr.eu-central-1.amazonaws.com" "$TEST_EMAIL" > auth/ecr.yaml
-        create_auth_file "_json_key" "$TEST_GAR_PASSWORD" "europe-west3-docker.pkg.dev" "$TEST_EMAIL" > auth/gar.yaml
-        create_auth_file "_json_key" "$TEST_GCR_PASSWORD" "gcr.io" "$TEST_EMAIL" > auth/gcr.yaml
+        create_auth_file "_json_key" $(echo "$TEST_GAR_PASSWORD" | base64 -d) "europe-west3-docker.pkg.dev" "$TEST_EMAIL" > auth/gar.yaml
+        create_auth_file "_json_key" $(echo "$TEST_GCR_PASSWORD" | base64 -d) "gcr.io" "$TEST_EMAIL" > auth/gcr.yaml
         create_auth_file "$TEST_GHCR_USERNAME" "$TEST_GHCR_PASSWORD" "ghcr.io" "$TEST_EMAIL" > auth/ghcr.yaml
         create_auth_file "$TEST_HUB_USERNAME" "$TEST_HUB_PASSWORD" "https://index.docker.io/v1/" "$TEST_EMAIL" > auth/hub.yaml
         create_legacy_auth_file "$TEST_GHCR_USERNAME" "$TEST_GHCR_PASSWORD" "ghcr.io" > auth/legacy-ghcr.yaml
