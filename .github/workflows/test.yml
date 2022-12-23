@@ -59,8 +59,8 @@ jobs:
         TEST_HUB_USERNAME=$(_read "TEST_HUB_USERNAME")
         TEST_HUB_PASSWORD=$(_read "TEST_HUB_PASSWORD")
         TEST_EMAIL=$(_read "TEST_EMAIL")
-        AWS_ACCESS_KEY_ID=$(_read "AWS_ACCESS_KEY_ID")
-        AWS_SECRET_ACCESS_KEY=$(_read "AWS_SECRET_ACCESS_KEY")
+        export AWS_ACCESS_KEY_ID=$(_read "AWS_ACCESS_KEY_ID")
+        export AWS_SECRET_ACCESS_KEY=$(_read "AWS_SECRET_ACCESS_KEY")
         export AWS_REGION=$(_read "AWS_REGION")
 
         source hack/prepare-auth-files.sh
