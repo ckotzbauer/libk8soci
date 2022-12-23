@@ -61,7 +61,7 @@ jobs:
         TEST_EMAIL=$(_read "TEST_EMAIL")
         AWS_ACCESS_KEY_ID=$(_read "AWS_ACCESS_KEY_ID")
         AWS_SECRET_ACCESS_KEY=$(_read "AWS_SECRET_ACCESS_KEY")
-        AWS_REGION=$(_read "AWS_REGION")
+        export AWS_REGION=$(_read "AWS_REGION")
 
         source hack/prepare-auth-files.sh
         mkdir auth
