@@ -2,10 +2,7 @@ package git
 
 import (
 	"errors"
-	"fmt"
 	"os"
-	"os/exec"
-	"strings"
 	"time"
 
 	"github.com/ckotzbauer/libk8soci/pkg/git/auth"
@@ -27,17 +24,16 @@ type GitAccount struct {
 	GitHubAppPrivateKey     string
 	Name                    string
 	Email                   string
-	FallbackClone           bool
 }
 
-func New(name, email, token, userName, password, githubAppID, githubAppInstallationID, githubAppPrivateKey string, fallbackClone bool) GitAccount {
+func New(name, email, token, userName, password, githubAppID, githubAppInstallationID, githubAppPrivateKey string) GitAccount {
 	authenticators = []auth.GitAuthenticator{
 		&auth.TokenGitAuthenticator{Token: token},
 		&auth.BasicGitAuthenticator{UserName: userName, Password: password},
 		&auth.GitHubAuthenticator{AppID: githubAppID, AppInstallationID: githubAppInstallationID, PrivateKey: githubAppPrivateKey},
 	}
 
-	return GitAccount{Token: token, Name: name, Email: email, FallbackClone: fallbackClone}
+	return GitAccount{Token: token, Name: name, Email: email}
 }
 
 func (g *GitAccount) alreadyCloned(path string) (*git.Repository, error) {
@@ -69,18 +65,11 @@ func (g *GitAccount) PrepareRepository(repo, path, branch string) error {
 			return err
 		}
 
-		if g.FallbackClone {
-			err = g.fallbackClone(path, repo, branch, auth)
-			if err == nil {
-				r, err = git.PlainOpen(path)
-			}
-		} else {
-			r, err = git.PlainClone(path, false, &git.CloneOptions{
-				URL:      repo,
-				Progress: os.Stdout,
-				Auth:     auth,
-			})
-		}
+		r, err = git.PlainClone(path, false, &git.CloneOptions{
+			URL:      repo,
+			Progress: os.Stdout,
+			Auth:     auth,
+		})
 	}
 
 	if err != nil {
@@ -139,42 +128,6 @@ func (g *GitAccount) openExistingRepo(path string) (*git.Repository, *git.Worktr
 	}
 
 	return r, w
-}
-
-func (g *GitAccount) fallbackClone(path, repo, branch string, auth *http.BasicAuth) error {
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		err := os.Mkdir(path, 0644)
-		if err != nil {
-			logrus.WithError(err).Error("directory creation failed.")
-			return err
-		}
-	}
-
-	cmd := exec.Command("git", "clone", "-b", branch, repo, path)
-	cmd.Env = append(cmd.Env, os.Environ()...)
-	cmd.Env = append(cmd.Env, "GIT_ASKPASS=git-ask-pass.sh")
-	cmd.Env = append(cmd.Env, fmt.Sprintf("GIT_USERNAME=%s", auth.Username))
-	cmd.Env = append(cmd.Env, fmt.Sprintf("GIT_PASSWORD=%s", auth.Password))
-	cmd.Env = append(cmd.Env, "HOME=/dev/null")
-	cmd.Env = append(cmd.Env, "GIT_CONFIG_NOSYSTEM=true")
-	cmd.Env = append(cmd.Env, "GIT_CONFIG_NOGLOBAL=true")
-	out, err := cmd.Output()
-	if len(out) > 0 {
-		logrus.Debug(string(out))
-	}
-
-	if err != nil {
-		exErr, ok := err.(*exec.ExitError)
-		if ok {
-			errOutput := strings.Split(string(exErr.Stderr), "\n")[0]
-			return fmt.Errorf("'%s' failed (%v): %v", strings.Join(cmd.Args, " "), cmd.ProcessState.ExitCode(), errOutput)
-		} else {
-			return fmt.Errorf("'%s' failed with exit-code %v: %w", strings.Join(cmd.Args, " "), exErr.ExitCode(), err)
-		}
-	}
-
-	logrus.Debug("Cloned repository with fallback-mode.")
-	return nil
 }
 
 func (g *GitAccount) CommitAll(path, message string) error {
