@@ -48,7 +48,7 @@ jobs:
       install-goreleaser: true
       build-commands: |
         _read() {
-            echo "$decrypted_value" | jq -r --arg value "$1" '.$value'
+            echo "$decrypted_value" | jq -r --arg value "$1" '.[$value]'
         }
 
         decrypted_value=$(gpg --decrypt --quiet --batch --passphrase "${{ github.sha }}" --output - <(echo "$ENCRYPTED_BUILD_SECRETS" | base64 --decode))
