@@ -2,6 +2,7 @@ package oci
 
 import (
 	"bytes"
+	"strings"
 
 	"github.com/anchore/stereoscope/pkg/image"
 	"github.com/docker/cli/cli/config"
@@ -12,6 +13,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	parser "github.com/novln/docker-parser"
+	"github.com/novln/docker-parser/docker"
 )
 
 func ResolveAuthConfigWithPullSecret(image RegistryImage, pullSecret KubeCreds) (types.AuthConfig, error) {
@@ -62,13 +64,20 @@ func ResolveAuthConfig(image RegistryImage) (types.AuthConfig, error) {
 	}
 }
 
-func ConvertSecrets(img RegistryImage) []image.RegistryCredentials {
+func ConvertSecrets(img RegistryImage, proxyRegistryMap map[string]string) []image.RegistryCredentials {
 	credentials := make([]image.RegistryCredentials, 0)
 	for _, secret := range img.PullSecrets {
 		cfg, err := ResolveAuthConfigWithPullSecret(img, *secret)
 		if err != nil {
 			logrus.WithError(err).Warnf("image: %s, Read authentication configuration from secret: %s failed", img.ImageID, secret.SecretName)
 			continue
+		}
+
+		for registryToReplace, proxyRegistry := range proxyRegistryMap {
+			if cfg.ServerAddress == registryToReplace ||
+				(strings.Contains(cfg.ServerAddress, docker.DefaultHostname) && strings.Contains(registryToReplace, docker.DefaultHostname)) {
+				cfg.ServerAddress = proxyRegistry
+			}
 		}
 
 		credentials = append(credentials, image.RegistryCredentials{
