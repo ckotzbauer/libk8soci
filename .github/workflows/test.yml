@@ -52,16 +52,16 @@ jobs:
         }
 
         decrypted_value=$(gpg --decrypt --quiet --batch --passphrase "${{ github.sha }}" --output - <(echo "$ENCRYPTED_BUILD_SECRETS" | base64 --decode))
-        TEST_GCR_PASSWORD=$(_read TEST_GCR_PASSWORD)
-        TEST_GAR_PASSWORD=$(_read TEST_GAR_PASSWORD)
-        TEST_GHCR_USERNAME=$(_read TEST_GHCR_USERNAME)
-        TEST_GHCR_PASSWORD=$(_read TEST_GHCR_PASSWORD)
-        TEST_HUB_USERNAME=$(_read TEST_HUB_USERNAME)
-        TEST_HUB_PASSWORD=$(_read TEST_HUB_PASSWORD)
-        TEST_EMAIL=$(_read TEST_EMAIL)
-        AWS_ACCESS_KEY_ID=$(_read AWS_ACCESS_KEY_ID)
-        AWS_SECRET_ACCESS_KEY=$(_read AWS_SECRET_ACCESS_KEY)
-        AWS_REGION=$(_read AWS_REGION)
+        TEST_GCR_PASSWORD=$(_read "TEST_GCR_PASSWORD")
+        TEST_GAR_PASSWORD=$(_read "TEST_GAR_PASSWORD")
+        TEST_GHCR_USERNAME=$(_read "TEST_GHCR_USERNAME")
+        TEST_GHCR_PASSWORD=$(_read "TEST_GHCR_PASSWORD")
+        TEST_HUB_USERNAME=$(_read "TEST_HUB_USERNAME")
+        TEST_HUB_PASSWORD=$(_read "TEST_HUB_PASSWORD")
+        TEST_EMAIL=$(_read "TEST_EMAIL")
+        AWS_ACCESS_KEY_ID=$(_read "AWS_ACCESS_KEY_ID")
+        AWS_SECRET_ACCESS_KEY=$(_read "AWS_SECRET_ACCESS_KEY")
+        AWS_REGION=$(_read "AWS_REGION")
 
         source hack/prepare-auth-files.sh
         mkdir auth
