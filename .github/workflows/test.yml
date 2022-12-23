@@ -5,21 +5,40 @@ on:
     branches:
       - main
 
-env:
-  TEST_GCR_PASSWORD: ${{ secrets.TEST_GCR_PASSWORD }}
-  TEST_GAR_PASSWORD: ${{ secrets.TEST_GAR_PASSWORD }}
-  TEST_GHCR_USERNAME: ${{ secrets.TEST_GHCR_USERNAME }}
-  TEST_GHCR_PASSWORD: ${{ secrets.TEST_GHCR_PASSWORD }}
-  TEST_HUB_USERNAME: ${{ secrets.TEST_HUB_USERNAME }}
-  TEST_HUB_PASSWORD: ${{ secrets.TEST_HUB_PASSWORD }}
-  TEST_EMAIL: $TEST_EMAIL
-  AWS_ACCESS_KEY_ID: ${{ secrets.TEST_AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.TEST_AWS_SECRET_ACCESS_KEY }}
-  AWS_REGION: eu-central-1
-
 jobs:
+  prepare-secrets:
+    runs-on: ubuntu-latest
+    outputs:
+      encrypted-build-secrets: ${{ steps.prepare.outputs.encrypted_build_secrets }}
+    steps:
+      - name: Prepare
+        id: prepare
+        run: |
+          _append() {
+              values=$(echo "$values" | jq --arg key "$1" --arg value "$2" '.[$key] = $value')
+          }
+
+          values='{}'
+          _append TEST_GCR_PASSWORD "${{ secrets.TEST_GCR_PASSWORD }}"
+          _append TEST_GAR_PASSWORD "${{ secrets.TEST_GAR_PASSWORD }}"
+          _append TEST_GHCR_USERNAME "${{ secrets.TEST_GHCR_USERNAME }}"
+          _append TEST_GHCR_PASSWORD "${{ secrets.TEST_GHCR_PASSWORD }}"
+          _append TEST_HUB_USERNAME "${{ secrets.TEST_HUB_USERNAME }}"
+          _append TEST_HUB_PASSWORD "${{ secrets.TEST_HUB_PASSWORD }}"
+          _append TEST_EMAIL "${{ secrets.TEST_EMAIL }}"
+          _append AWS_ACCESS_KEY_ID "${{ secrets.TEST_AWS_ACCESS_KEY_ID }}"
+          _append AWS_SECRET_ACCESS_KEY "${{ secrets.TEST_AWS_SECRET_ACCESS_KEY }}"
+          _append AWS_REGION "eu-central-1"
+
+          encrypted_build_secrets=$(gpg --symmetric --batch --passphrase "${{ github.sha }}" --output - <(echo "$values") | base64 -w0)
+          echo "encrypted_build_secrets=$encrypted_build_secrets" >> $GITHUB_OUTPUT
+
+
   test:
-    uses: ckotzbauer/actions-toolkit/.github/workflows/toolkit-build-test.yml@0.29.0
+    uses: ckotzbauer/actions-toolkit/.github/workflows/toolkit-build-test.yml@0.30.0
+    needs: prepare-secrets
+    secrets:
+      encrypted-build-secrets: ${{ needs.prepare-secrets.outputs.encrypted-build-secrets }}
     with:
       install-go: true
       go-version: "1.19.4"
@@ -28,9 +47,24 @@ jobs:
       install-cosign: true
       install-goreleaser: true
       build-commands: |
+        _read() {
+            echo "$decrypted_value" | jq -r --arg value "$1" '.$value'
+        }
+
+        decrypted_value=$(gpg --decrypt --quiet --batch --passphrase "${{ github.sha }}" --output - <(echo "$ENCRYPTED_BUILD_SECRETS" | base64 --decode))
+        TEST_GCR_PASSWORD=$(_read TEST_GCR_PASSWORD)
+        TEST_GAR_PASSWORD=$(_read TEST_GAR_PASSWORD)
+        TEST_GHCR_USERNAME=$(_read TEST_GHCR_USERNAME)
+        TEST_GHCR_PASSWORD=$(_read TEST_GHCR_PASSWORD)
+        TEST_HUB_USERNAME=$(_read TEST_HUB_USERNAME)
+        TEST_HUB_PASSWORD=$(_read TEST_HUB_PASSWORD)
+        TEST_EMAIL=$(_read TEST_EMAIL)
+        AWS_ACCESS_KEY_ID=$(_read AWS_ACCESS_KEY_ID)
+        AWS_SECRET_ACCESS_KEY=$(_read AWS_SECRET_ACCESS_KEY)
+        AWS_REGION=$(_read AWS_REGION)
+
         source hack/prepare-auth-files.sh
         mkdir auth
-        printenv
         create_auth_file "AWS" "$(aws ecr get-login-password)" "055403865123.dkr.ecr.eu-central-1.amazonaws.com" "$TEST_EMAIL" > auth/ecr.yaml
         create_auth_file "_json_key" "$TEST_GAR_PASSWORD" "europe-west3-docker.pkg.dev" "$TEST_EMAIL" > auth/gar.yaml
         create_auth_file "_json_key" "$TEST_GCR_PASSWORD" "gcr.io" "$TEST_EMAIL" > auth/gcr.yaml
