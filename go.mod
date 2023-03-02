@@ -7,7 +7,7 @@ require (
 	github.com/docker/cli v20.10.23+incompatible
 	github.com/go-git/go-git/v5 v5.6.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	k8s.io/api v0.26.2
 	k8s.io/apimachinery v0.26.2
 	k8s.io/client-go v0.26.2
