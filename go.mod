@@ -3,7 +3,7 @@ module github.com/ckotzbauer/libk8soci
 go 1.19
 
 require (
-	github.com/anchore/stereoscope v0.0.0-20230222185948-fab1c9638abc
+	github.com/anchore/stereoscope v0.0.0-20230323161519-d7551b7f46f5
 	github.com/docker/cli v23.0.1+incompatible
 	github.com/go-git/go-git/v5 v5.6.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
@@ -72,7 +72,7 @@ require (
 	github.com/therootcompany/xz v1.0.1 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/wagoodman/go-partybus v0.0.0-20200526224238-eb215533f07d // indirect
-	github.com/wagoodman/go-progress v0.0.0-20200621122631-1a2120f0695a // indirect
+	github.com/wagoodman/go-progress v0.0.0-20230301185719-21920a456ad5 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	golang.org/x/crypto v0.3.0 // indirect
 	golang.org/x/mod v0.9.0 // indirect
