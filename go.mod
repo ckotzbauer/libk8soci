@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/anchore/stereoscope v0.0.0-20230222185948-fab1c9638abc
 	github.com/docker/cli v23.0.1+incompatible
-	github.com/go-git/go-git/v5 v5.6.0
+	github.com/go-git/go-git/v5 v5.6.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/stretchr/testify v1.8.2
 	k8s.io/api v0.26.3
@@ -15,8 +15,8 @@ require (
 
 require (
 	github.com/Microsoft/go-winio v0.6.0 // indirect
-	github.com/ProtonMail/go-crypto v0.0.0-20221026131551-cf6655e29de4 // indirect
-	github.com/acomagu/bufpipe v1.0.3 // indirect
+	github.com/ProtonMail/go-crypto v0.0.0-20230217124315-7d5c6f04bbb8 // indirect
+	github.com/acomagu/bufpipe v1.0.4 // indirect
 	github.com/anchore/go-logger v0.0.0-20220728155337-03b66a5207d8 // indirect
 	github.com/becheran/wildmatch-go v1.0.0 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.0.2 // indirect
@@ -30,7 +30,7 @@ require (
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.0 // indirect
 	github.com/go-git/gcfg v1.5.0 // indirect
-	github.com/go-git/go-billy/v5 v5.4.0 // indirect
+	github.com/go-git/go-billy/v5 v5.4.1 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.20.0 // indirect
@@ -74,7 +74,7 @@ require (
 	github.com/wagoodman/go-partybus v0.0.0-20200526224238-eb215533f07d // indirect
 	github.com/wagoodman/go-progress v0.0.0-20200621122631-1a2120f0695a // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
-	golang.org/x/crypto v0.3.0 // indirect
+	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/mod v0.9.0 // indirect
 	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/oauth2 v0.6.0 // indirect
