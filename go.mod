@@ -3,7 +3,7 @@ module github.com/ckotzbauer/libk8soci
 go 1.20
 
 require (
-	github.com/anchore/stereoscope v0.0.0-20230412183729-8602f1afc574
+	github.com/anchore/stereoscope v0.0.0-20230522170632-e14bc4437b2e
 	github.com/docker/cli v24.0.2+incompatible
 	github.com/go-git/go-git/v5 v5.7.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
@@ -23,7 +23,7 @@ require (
 	github.com/cloudflare/circl v1.3.3 // indirect
 	github.com/containerd/containerd v1.7.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/docker/distribution v2.8.1+incompatible // indirect
+	github.com/docker/distribution v2.8.2+incompatible // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/emicklei/go-restful/v3 v3.10.1 // indirect
