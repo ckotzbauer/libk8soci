@@ -103,7 +103,7 @@ require (
 	github.com/google/go-containerregistry v0.15.2
 	github.com/novln/docker-parser v1.0.0
 	github.com/pkg/errors v0.9.1
-	github.com/sirupsen/logrus v1.9.2
+	github.com/sirupsen/logrus v1.9.3
 	golang.org/x/sys v0.8.0 // indirect
 )
 
