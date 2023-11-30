@@ -3,7 +3,7 @@ module github.com/ckotzbauer/libk8soci
 go 1.20
 
 require (
-	github.com/anchore/stereoscope v0.0.0-20231027135531-5909e353ee88
+	github.com/anchore/stereoscope v0.0.0-20231117203853-3610f4ef3e83
 	github.com/docker/cli v24.0.7+incompatible
 	github.com/go-git/go-git/v5 v5.10.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
