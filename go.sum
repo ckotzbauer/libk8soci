@@ -54,6 +54,8 @@ github.com/anchore/stereoscope v0.0.0-20231117203853-3610f4ef3e83 h1:mxGIOmj+asE
 github.com/anchore/stereoscope v0.0.0-20231117203853-3610f4ef3e83/go.mod h1:GKAnytSVV1hoqB5r5Gd9M5Ph3Rzqq0zPdEJesewjC2w=
 github.com/anchore/stereoscope v0.0.0-20231220161148-590920dabc54 h1:i2YK5QEs9H2YB3B2zv+AGR44ves0nmAGOD07lMphH14=
 github.com/anchore/stereoscope v0.0.0-20231220161148-590920dabc54/go.mod h1:IylG7ofLoUKHwS1XDF6rPhOmaE3GgpAgsMdvvYfooTU=
+github.com/anchore/stereoscope v0.0.1 h1:OxF7PaxMltnAxjLnDMyka+SKRIQar/bBkDdavsnjyxM=
+github.com/anchore/stereoscope v0.0.1/go.mod h1:IylG7ofLoUKHwS1XDF6rPhOmaE3GgpAgsMdvvYfooTU=
 github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883/go.mod h1:rCTlJbsFo29Kk6CurOXKm700vrz8f0KW0JNfpkRJY/8=
 github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be h1:9AeTilPcZAjCFIImctFaOjnTIavg87rW78vTPkQqLI8=
 github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be/go.mod h1:ySMOLuWl6zY27l47sB3qLNK6tF2fkHG55UZxx8oIVo4=
