@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/anchore/stereoscope v0.0.1
-	github.com/docker/cli v25.0.3+incompatible
+	github.com/docker/cli v25.0.5+incompatible
 	github.com/go-git/go-git/v5 v5.11.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/stretchr/testify v1.9.0
