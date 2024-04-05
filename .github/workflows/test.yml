@@ -10,7 +10,7 @@ jobs:
     uses: ckotzbauer/actions-toolkit/.github/workflows/toolkit-build-test.yml@0.40.0
     with:
       install-go: true
-      go-version: "1.20.3"
+      go-version: "1.22.1"
       install-cosign: true
       install-goreleaser: true
       test-commands: make test
