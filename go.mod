@@ -6,7 +6,7 @@ toolchain go1.22.3
 
 require (
 	github.com/anchore/stereoscope v0.0.2
-	github.com/docker/cli v26.1.3+incompatible
+	github.com/docker/cli v27.0.3+incompatible
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/stretchr/testify v1.9.0
