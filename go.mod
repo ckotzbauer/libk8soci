@@ -2,7 +2,7 @@ module github.com/ckotzbauer/libk8soci
 
 go 1.22.0
 
-toolchain go1.22.3
+toolchain go1.22.4
 
 require (
 	github.com/anchore/stereoscope v0.0.2
