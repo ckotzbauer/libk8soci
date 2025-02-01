@@ -102,4 +102,4 @@ require (
 	golang.org/x/sys v0.18.0 // indirect
 )
 
-replace github.com/pjbgf/sha1cd => github.com/pjbgf/sha1cd v0.3.0
+replace github.com/pjbgf/sha1cd => github.com/pjbgf/sha1cd v0.3.2
