@@ -140,6 +140,7 @@ func (client *KubeClient) LoadSecrets(namespace string, secrets []corev1.LocalOb
 		legacy := false
 		name := secret.Name
 
+		// nolint
 		if secret.Type == corev1.SecretTypeDockerConfigJson {
 			creds = secret.Data[corev1.DockerConfigJsonKey]
 		} else if secret.Type == corev1.SecretTypeDockercfg {

@@ -39,10 +39,12 @@ func TestLegacyJSONSaveWithNoFile(t *testing.T) {
 
 	tmpHome, err := os.MkdirTemp("", "config-test")
 	assert.Nil(t, err)
+	// nolint
 	defer os.RemoveAll(tmpHome)
 
 	fn := filepath.Join(tmpHome, config.ConfigFileName)
 	f, _ := os.OpenFile(fn, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0600)
+	// nolint
 	defer f.Close()
 
 	assert.Nil(t, configFile.SaveToWriter(f))
