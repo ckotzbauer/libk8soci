@@ -6,7 +6,7 @@ require (
 	github.com/anchore/stereoscope v0.1.2
 	github.com/docker/cli v28.0.4+incompatible
 	github.com/go-git/go-git/v5 v5.14.0
-	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/stretchr/testify v1.10.0
 	k8s.io/api v0.32.3
 	k8s.io/apimachinery v0.32.3
