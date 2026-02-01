@@ -96,6 +96,6 @@ require (
 	github.com/google/go-containerregistry v0.20.3
 	github.com/novln/docker-parser v1.0.0
 	github.com/pkg/errors v0.9.1
-	github.com/sirupsen/logrus v1.9.3
+	github.com/sirupsen/logrus v1.9.4
 	golang.org/x/sys v0.32.0 // indirect
 )
