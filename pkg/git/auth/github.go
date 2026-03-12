@@ -13,7 +13,7 @@ import (
 	"time"
 
 	githttp "github.com/go-git/go-git/v5/plumbing/transport/http"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 var (
@@ -50,9 +50,9 @@ func (g *GitHubAuthenticator) ResolveAuth() (*githttp.BasicAuth, error) {
 }
 
 func issueJWTFromPEM(key *rsa.PrivateKey, appID string) (string, error) {
-	claims := &jwt.StandardClaims{
-		IssuedAt:  time.Now().Add(-1 * time.Minute).Unix(),
-		ExpiresAt: time.Now().Add(time.Minute * 5).Unix(),
+	claims := &jwt.RegisteredClaims{
+		IssuedAt:  jwt.NewNumericDate(time.Now().Add(-1 * time.Minute)),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 5)),
 		Issuer:    appID,
 	}
 
