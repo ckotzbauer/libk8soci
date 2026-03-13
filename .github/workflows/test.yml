@@ -7,7 +7,7 @@ on:
 
 jobs:
   test:
-    uses: ckotzbauer/actions-toolkit/.github/workflows/toolkit-build-test.yml@0.47.0
+    uses: ckotzbauer/actions-toolkit/.github/workflows/toolkit-build-test.yml@5eba4a9063c75ab16cc2c98722ea493f71159331 # 0.53.1
     with:
       install-go: true
       install-cosign: true
