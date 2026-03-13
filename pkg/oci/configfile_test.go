@@ -54,8 +54,7 @@ func TestLegacyJSONSaveWithNoFile(t *testing.T) {
 	expConfStr := `{
 	"auths": {
 		"https://index.docker.io/v1/": {
-			"auth": "am9lam9lOmhlbGxv",
-			"email": "user@example.com"
+			"auth": "am9lam9lOmhlbGxv"
 		}
 	}
 }`
