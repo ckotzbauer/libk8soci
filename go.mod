@@ -3,7 +3,7 @@ module github.com/ckotzbauer/libk8soci
 go 1.25.6
 
 require (
-	github.com/anchore/stereoscope v0.1.21
+	github.com/anchore/stereoscope v0.1.23
 	github.com/docker/cli v29.4.0+incompatible
 	github.com/go-git/go-git/v5 v5.18.0
 	github.com/golang-jwt/jwt/v5 v5.3.1
@@ -17,7 +17,7 @@ require (
 	dario.cat/mergo v1.0.1 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/ProtonMail/go-crypto v1.1.6 // indirect
-	github.com/anchore/go-logger v0.0.0-20250318195838-07ae343dd722 // indirect
+	github.com/anchore/go-logger v0.1.0 // indirect
 	github.com/becheran/wildmatch-go v1.0.0 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.10.0 // indirect
 	github.com/cloudflare/circl v1.6.3 // indirect
