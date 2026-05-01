@@ -7,10 +7,14 @@ github.com/ProtonMail/go-crypto v1.1.6 h1:ZcV+Ropw6Qn0AX9brlQLAUXfqLBc7Bl+f/DmNx
 github.com/ProtonMail/go-crypto v1.1.6/go.mod h1:rA3QumHc/FZ8pAHreoekgiAbzpNsfQAosU5td4SnOrE=
 github.com/anchore/go-logger v0.0.0-20250318195838-07ae343dd722 h1:2SqmFgE7h+Ql4VyBzhjLkRF/3gDrcpUBj8LjvvO6OOM=
 github.com/anchore/go-logger v0.0.0-20250318195838-07ae343dd722/go.mod h1:oFuE8YuTCM+spgMXhePGzk3asS94yO9biUfDzVTFqNw=
+github.com/anchore/go-logger v0.1.0 h1:3pE9Sli4SE1I/mtV+2pZXzim+aWj83BRaneVXeMgD3A=
+github.com/anchore/go-logger v0.1.0/go.mod h1:0l63X5VyHqfWQwsNaTmkgXErsfohze3NAFCXFdhSjdQ=
 github.com/anchore/stereoscope v0.1.2 h1:0+Jcf7hoImYKfrH2XzN6vvbmbpm68A/woabC43gZ4eU=
 github.com/anchore/stereoscope v0.1.2/go.mod h1:kU4LkiocOimxuSnlmJgilHCfDMCR5t/UroKIpzI8jNw=
 github.com/anchore/stereoscope v0.1.21 h1:rIwPDjJQdOdIvMrkNyZFkUS5dSyQPDjAwUqU0XjVF74=
 github.com/anchore/stereoscope v0.1.21/go.mod h1:8652axKmO8itOcGX8gzAvHW3cVWvbxpJ4woLNMEO4a0=
+github.com/anchore/stereoscope v0.1.23 h1:q9i3CtbicTuSlcCnA+5pfoT9WDCEoSqvXDfHMH1hyWo=
+github.com/anchore/stereoscope v0.1.23/go.mod h1:JLnun49fkLkuv3ebU0ROvFl/0JiRmNmUtCzc6y4ollo=
 github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883/go.mod h1:rCTlJbsFo29Kk6CurOXKm700vrz8f0KW0JNfpkRJY/8=
 github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be h1:9AeTilPcZAjCFIImctFaOjnTIavg87rW78vTPkQqLI8=
 github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be/go.mod h1:ySMOLuWl6zY27l47sB3qLNK6tF2fkHG55UZxx8oIVo4=
