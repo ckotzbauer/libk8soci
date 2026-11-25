@@ -95,20 +95,56 @@ func (client *KubeClient) LoadPodInfos(namespaces []corev1.Namespace, podLabelSe
 	return podInfos
 }
 
+// specImagesByContainer maps each container name to the image reference in the pod spec.
+// Container names are unique across containers, init containers and ephemeral containers.
+func specImagesByContainer(pod corev1.Pod) map[string]string {
+	images := make(map[string]string)
+	for _, c := range pod.Spec.Containers {
+		images[c.Name] = c.Image
+	}
+	for _, c := range pod.Spec.InitContainers {
+		images[c.Name] = c.Image
+	}
+	for _, c := range pod.Spec.EphemeralContainers {
+		images[c.Name] = c.Image
+	}
+	return images
+}
+
+// specMatchesRunningDigest reports whether the spec reference pins the digest that is running.
+// The status image is the runtime's local image ID for images pulled by digest (containerd),
+// which loses the tag of a "tag@digest" reference, so the spec reference is preferred then. It
+// is used only when its digest is the one in imageID: after an in-place image update the status
+// still describes the old container. A tag can't be checked that way, so tag-only references
+// keep the status image.
+func specMatchesRunningDigest(spec, imageID string) bool {
+	_, specDigest, ok := strings.Cut(spec, "@")
+	if !ok || specDigest == "" {
+		return false
+	}
+	_, runningDigest, ok := strings.Cut(imageID, "@")
+	return ok && specDigest == runningDigest
+}
+
 func (client *KubeClient) ExtractPodInfos(pod corev1.Pod) PodInfo {
 	statuses := []corev1.ContainerStatus{}
 	statuses = append(statuses, pod.Status.ContainerStatuses...)
 	statuses = append(statuses, pod.Status.InitContainerStatuses...)
 	statuses = append(statuses, pod.Status.EphemeralContainerStatuses...)
 	containers := make([]*ContainerInfo, 0)
+	specImages := specImagesByContainer(pod)
 
 	for _, c := range statuses {
 		if c.ImageID != "" {
 			imageIDSlice := strings.Split(c.ImageID, "://")
 			trimmedImageID := imageIDSlice[len(imageIDSlice)-1]
+			image := c.Image
+			if spec, ok := specImages[c.Name]; ok && specMatchesRunningDigest(spec, trimmedImageID) {
+				image = spec
+			}
 			containers = append(containers, &ContainerInfo{
 				Image: &oci.RegistryImage{
-					Image:   c.Image,
+					Image:   image,
 					ImageID: trimmedImageID,
 				},
 				Name: c.Name,
